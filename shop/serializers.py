@@ -2,7 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import (
     Category, Product, ProductImage,
-    UserProfile, Comment, Like, Rating
+    UserProfile, Comment, Like, Rating, CartItem,
+    Order, OrderItem
 )
 
 # 1️⃣ Foydalanuvchi
@@ -23,7 +24,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = ['id', 'image']
+        fields = ['id', 'product', 'image']
+
 
 
 # 4️⃣ Reytingni hisoblash uchun maxsus maydon
@@ -127,3 +129,27 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+
+
+# 1️⃣2️⃣ Foydalanuvchi uchun savat
+class CartItemSerializer(serializers.ModelSerializer):
+    product_detail = ProductSerializer(source='product', read_only=True)
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'product_detail', 'quantity']
+        
+# 1️⃣3️⃣ Buyurtmalar
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['product', 'product_name', 'quantity']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'created_at', 'is_paid', 'items']

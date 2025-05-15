@@ -1,16 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    ProductListView, ProductDetailView,
+    ProductListView, ProductDetailView, ProductImageUploadView,
     CategoryListView, CategoryDetailView,
     CommentCreateView, LikeCreateView, RatingCreateView,
     UserProfileView, WishlistView, AdminProductCreateView,
-    RegisterView, LoginView
+    RegisterView, LoginView, LogoutView, CartView, OrderAPIView
 )
-
-# Swagger schema va view'ni import qilish
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
 
 # Swagger schema yaratish
 schema_view = get_schema_view(
@@ -34,6 +33,8 @@ urlpatterns = [
     # Mahsulot URL'lari
     path('products/', ProductListView.as_view(), name='product-list'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
+    path('product-images/', ProductImageUploadView.as_view(), name='product-image-upload'),
+
     
     # Izoh URL'lari
     path('comments/', CommentCreateView.as_view(), name='comment-create'),
@@ -56,7 +57,11 @@ urlpatterns = [
     # Ro‘yxatdan o‘tish va Login URL'lari
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     
     # Swagger API hujjatlari uchun URL
     path('swagger/', schema_view.as_view(), name='swagger'),  # Swagger URL qo'shish
+    # Savatcha
+    path('cart/', CartView.as_view(), name='cart'),
+    path('orders/', OrderAPIView.as_view(), name='orders'),
 ]

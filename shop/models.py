@@ -40,7 +40,7 @@ class Product(models.Model):
 # 3️⃣ Mahsulotga bir nechta rasm
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/extra/')
+    image = models.ImageField(upload_to='product_images/')
     created_at = models.DateTimeField(auto_now_add=True)  # Qo'shimcha maydon
 
     def __str__(self):
@@ -93,3 +93,32 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.user.username} rated {self.product.name} - {self.stars}★"
+
+# 8️⃣ Shopping
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ['user', 'product']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name} ({self.quantity})"
+    
+# 9️⃣ Orders
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Order #{self.id} by {self.user.username}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.product.name} ({self.quantity})"
